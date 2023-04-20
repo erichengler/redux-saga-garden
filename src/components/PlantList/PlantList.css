@@ -1,0 +1,11 @@
+table {
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+th {
+    border: solid;
+    border-width: 1px;
+    padding: 20px;
+}

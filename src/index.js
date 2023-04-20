@@ -1,29 +1,71 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-
+import logger from 'redux-logger';
+import createSagaMiddleware from '@redux-saga/core';
+import { takeEvery, put } from 'redux-saga/effects';
+import axios from 'axios';
 import App from './App';
 
-// this startingPlantArray should eventually be removed
-const startingPlantArray = [
-  { id: 1, name: 'Rose' },
-  { id: 2, name: 'Tulip' },
-  { id: 3, name: 'Oak' }
-];
 
-const plantList = (state = startingPlantArray, action) => {
+const plantList = (state = [], action) => {
   switch (action.type) {
     case 'ADD_PLANT':
-      return [ ...state, action.payload ]
+      return [ ...state, action.payload ];
+    case 'SET_PLANT_LIST':
+      return action.payload;
     default:
       return state;
   }
 };
 
+function* fetchPlants() {
+  try {
+    const plants = yield axios.get('/api/plant');
+    yield put({ type: 'SET_PLANT_LIST', payload: plants.data })
+  } catch (error) {
+    console.log(`Error in fetchPlants: ${error}`);
+    alert('Something went wrong!');
+  }
+}
+
+function* postPlant(action) {
+  try {
+    yield axios.post('/api/plant', action.payload);
+    yield put({ type: 'FETCH_PLANT_LIST'});
+  } catch (error) {
+    console.log(`error in PostPlant ${error}`);
+    alert('Something went wrong');
+  }
+}
+
+function* deletePlant() {
+  try {
+    // * ASK ABOUT HOW TO DELETE IN A SAGA
+    // * THIS ONLY DELETES THE PLANT WITH THE ID OF 1
+    yield axios.delete(`/api/plant/1`)
+    yield put({ type: 'FETCH_PLANT_LIST' });
+  } catch (error) {
+    console.log(`error in deletePlant`);
+    alert('Something went wrong');
+  }
+}
+
+function* rootSaga() {
+  yield takeEvery('FETCH_PLANT_LIST', fetchPlants);
+  yield takeEvery('ADD_PLANT', postPlant);
+  yield takeEvery('DELETE_PLANT', deletePlant);
+}
+
+const sagaMiddleware = createSagaMiddleware();
+
 const store = createStore(
   combineReducers({ plantList }),
+  applyMiddleware(sagaMiddleware, logger)
 );
+
+sagaMiddleware.run(rootSaga);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

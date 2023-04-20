@@ -1,9 +1,12 @@
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import React from 'react';
 import Garden from './components/Garden/Garden';
 
 import './App.css';
 
 function App (){
+
   return(
     <div className="App">
       <header className="App-header">
