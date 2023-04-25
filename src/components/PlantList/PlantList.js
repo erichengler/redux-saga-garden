@@ -16,8 +16,8 @@ function PlantList() {
         dispatch({ type: 'FETCH_PLANT_LIST' });
     }, []); 
 
-    const deletePlant = (event) => {
-        dispatch({ type: 'DELETE_PLANT', payload: event.target });
+    const deletePlant = (id) => {
+        dispatch({ type: 'DELETE_PLANT', payload: id });
     }
 
     return (
@@ -47,7 +47,7 @@ function PlantList() {
                         <td>{plant.family}</td>
                         <td>{plant.subfamily}</td>
                         <td>{plant.genus}</td>
-                        <td><button onClick={ (event) => deletePlant(event) }>Delete</button></td>
+                        <td><button onClick={ () => deletePlant(plant.id) }>Delete</button></td>
                     </tr>
                     ))}
                 </tbody>

@@ -33,22 +33,20 @@ function* fetchPlants() {
 function* postPlant(action) {
   try {
     yield axios.post('/api/plant', action.payload);
-    yield put({ type: 'FETCH_PLANT_LIST'});
+    yield put({ type: 'FETCH_PLANT_LIST' });
   } catch (error) {
     console.log(`error in PostPlant ${error}`);
     alert('Something went wrong');
   }
 }
 
-function* deletePlant() {
+function* deletePlant(action) {
   try {
-    // * ASK ABOUT HOW TO DELETE IN A SAGA
-    // * THIS ONLY DELETES THE PLANT WITH THE ID OF 1
-    yield axios.delete(`/api/plant/1`)
+    yield axios.delete(`/api/plant/${action.payload}`)
     yield put({ type: 'FETCH_PLANT_LIST' });
   } catch (error) {
-    console.log(`error in deletePlant`);
-    alert('Something went wrong');
+    console.log(`error in deletePlant ${error}`);
+    alert('Something went wrong.');
   }
 }
 
